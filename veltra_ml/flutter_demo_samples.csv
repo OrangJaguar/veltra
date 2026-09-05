@@ -1,0 +1,4 @@
+skin_temp,sweat_rate,salinity,wbgt,elapsed_hours,label,z_score,temp_rate,acclimatization
+36.8,0.5,42,25,2,GREEN,-0.3,0.1428571428571415,1.5
+37.6,1.2,58,30,4,AMBER,1.3,0.2682926829268296,1.5
+38.7,1.8,75,33,6,RED,3.0,0.36065573770491854,1.5

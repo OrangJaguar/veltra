@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "606217642968",
+    "project_id": "veltra67",
+    "storage_bucket": "veltra67.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:606217642968:android:a8dcabed403674e31a08ad",
+        "android_client_info": {
+          "package_name": "com.veltra.veltra"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCuBAkZIvA_Nl_75e9i6twT6abJ2hN-u3c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
