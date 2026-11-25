@@ -5,7 +5,8 @@ import '../features/auth/providers/auth_providers.dart';
 /// Fixed local user id for offline demo walkthroughs.
 const demoUserId = 'veltra-demo-foreman';
 
-final demoModeProvider = StateProvider<bool>((ref) => false);
+/// The phone launches into the demo. Login stays in the repo and is not this path.
+final demoModeProvider = StateProvider<bool>((ref) => true);
 
 /// Signed-in Firebase uid, or [demoUserId] when demo mode is on.
 final activeUserIdProvider = Provider<String?>((ref) {

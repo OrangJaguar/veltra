@@ -44,6 +44,24 @@ class WeatherService {
     return reading;
   }
 
+  /// A live or cached outdoor reading. Returns null when the only available
+  /// numbers are the hardcoded fallback, so a check-in can proceed without them.
+  Future<({WeatherReading reading, String source})?> readOptionalContext(
+    String userId,
+  ) async {
+    final coords = await _resolveCoordinates();
+    final cached = await _readCache(userId, coords);
+    if (cached != null) {
+      return (reading: cached, source: 'cached');
+    }
+
+    final fetched = await _fetchReading(coords.latitude, coords.longitude);
+    if (identical(fetched, fallbackReading)) return null;
+
+    await _writeCache(userId: userId, reading: fetched);
+    return (reading: fetched, source: 'estimated');
+  }
+
   Future<void> clearCache(String userId) async {
     await _databaseService.db.delete(
       'weather_cache',

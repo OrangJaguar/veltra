@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/firebase_gate.dart';
 import '../../../core/theme/veltra_colors.dart';
 import '../../../core/theme/veltra_text_styles.dart';
 import '../../../core/widgets/glass_card.dart';
@@ -38,13 +39,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     });
 
     try {
+      await ref.read(demoDataServiceProvider).seedCheckInDemo(demoUserId);
       ref.read(demoModeProvider.notifier).state = true;
-      final workers = await ref.read(workerRepositoryProvider).getWorkers(demoUserId);
-      if (workers.isEmpty) {
-        await ref.read(demoDataServiceProvider).seedDemoCrew(demoUserId);
-      }
       refreshWorkers(ref);
-      if (mounted) context.go('/scan');
+      if (mounted) context.go('/checkin');
+    } catch (error) {
+      if (mounted) {
+        setState(() => _error = 'Could not open the demo');
+      }
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -55,6 +57,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       _isLoading = true;
       _error = null;
     });
+
+    if (!firebaseReady) {
+      setState(() {
+        _isLoading = false;
+        _error = 'Check your connection';
+      });
+      return;
+    }
 
     try {
       await ref.read(authRepositoryProvider).signIn(

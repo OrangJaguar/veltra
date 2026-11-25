@@ -13,7 +13,7 @@ class ScanRepository {
   ScanRepository(this._databaseService, this._firestore);
 
   final DatabaseService _databaseService;
-  final FirebaseFirestore _firestore;
+  final FirebaseFirestore? _firestore;
   final _uuid = const Uuid();
 
   Future<List<ScanRecord>> getScansForWorker(
@@ -129,7 +129,11 @@ class ScanRepository {
     required String userId,
     required ScanRecord scan,
   }) async {
-    await _firestore
+    final firestore = _firestore;
+    if (firestore == null) {
+      throw StateError('Firebase is not available');
+    }
+    await firestore
         .collection('users')
         .doc(userId)
         .collection('scans')

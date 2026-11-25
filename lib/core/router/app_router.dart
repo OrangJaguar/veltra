@@ -14,6 +14,11 @@ import '../../features/scan/screens/scan_results_screen.dart';
 import '../../features/scan/screens/scan_screen.dart';
 import '../../features/settings/screens/privacy_screen.dart';
 import '../../features/settings/screens/settings_screen.dart';
+import '../../features/checkin/screens/checkin_saved_screen.dart';
+import '../../features/checkin/screens/checkin_session_screen.dart';
+import '../../features/checkin/screens/checkin_shell.dart';
+import '../../features/checkin/screens/checkin_worker_detail_screen.dart';
+import '../../features/checkin/screens/worker_history_screen.dart';
 import '../../features/shell/main_shell.dart';
 
 final rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -39,15 +44,27 @@ final goRouterProvider = Provider<GoRouter>((ref) {
 
   return GoRouter(
     navigatorKey: rootNavigatorKey,
-    initialLocation: '/scan',
+    initialLocation: '/checkin',
     refreshListenable: refreshNotifier,
     redirect: (context, state) {
+      final path = state.matchedLocation;
+
       if (ref.read(demoModeProvider)) {
-        final path = state.matchedLocation;
-        if (path == '/login' || path == '/signup' || path == '/onboarding') {
-          return '/scan';
+        const foremanRoutes = {'/scan', '/crew', '/settings', '/scan/results'};
+        if (path == '/login' ||
+            path == '/signup' ||
+            path == '/onboarding' ||
+            foremanRoutes.contains(path)) {
+          return '/checkin';
         }
         return null;
+      }
+
+      if (path.startsWith('/checkin')) {
+        final signedIn = ref.read(authStateProvider);
+        if (signedIn.isLoading) return null;
+        if (signedIn.valueOrNull == null) return '/login';
+        return '/scan';
       }
 
       final authAsync = ref.read(authStateProvider);
@@ -56,7 +73,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       if (authAsync.isLoading) return null;
 
       final user = authAsync.valueOrNull;
-      final path = state.matchedLocation;
       final isAuthRoute = path == '/login' || path == '/signup';
       final isOnboarding = path == '/onboarding';
 
@@ -83,6 +99,48 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
+      GoRoute(
+        path: '/checkin/session',
+        pageBuilder: (context, state) {
+          final workerId = state.uri.queryParameters['workerId'] ?? '';
+          final windowId = state.uri.queryParameters['windowId'] ?? '';
+          return _checkInPush(
+            state,
+            CheckInSessionScreen(workerId: workerId, windowId: windowId),
+          );
+        },
+      ),
+      GoRoute(
+        path: '/checkin/saved/:checkInId',
+        pageBuilder: (context, state) {
+          return _checkInPush(
+            state,
+            CheckInSavedScreen(checkInId: state.pathParameters['checkInId']!),
+          );
+        },
+      ),
+      GoRoute(
+        path: '/checkin/history',
+        pageBuilder: (context, state) {
+          final workerId = state.uri.queryParameters['workerId'] ?? '';
+          return _checkInPush(state, WorkerHistoryScreen(workerId: workerId));
+        },
+      ),
+      GoRoute(
+        path: '/checkin/worker/:workerId',
+        pageBuilder: (context, state) {
+          return _checkInPush(
+            state,
+            CheckInWorkerDetailScreen(
+              workerId: state.pathParameters['workerId']!,
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        path: '/checkin',
+        builder: (context, state) => const CheckInShell(),
+      ),
       GoRoute(
         path: '/login',
         builder: (context, state) => const LoginScreen(),
@@ -184,3 +242,25 @@ final goRouterProvider = Provider<GoRouter>((ref) {
     ],
   );
 });
+
+CustomTransitionPage<void> _checkInPush(GoRouterState state, Widget child) {
+  return CustomTransitionPage<void>(
+    key: state.pageKey,
+    child: child,
+    transitionDuration: const Duration(milliseconds: 350),
+    reverseTransitionDuration: const Duration(milliseconds: 350),
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      final curved = animation.drive(CurveTween(curve: Curves.easeOutCubic));
+      return FadeTransition(
+        opacity: curved,
+        child: SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(0.12, 0),
+            end: Offset.zero,
+          ).animate(curved),
+          child: child,
+        ),
+      );
+    },
+  );
+}

@@ -17,6 +17,9 @@ class Worker {
     this.lastStatus,
     this.lastScanAt,
     this.synced = false,
+    this.crewId,
+    this.archived = false,
+    this.podId,
   });
 
   final String id;
@@ -34,6 +37,9 @@ class Worker {
   final WorkerStatus? lastStatus;
   final DateTime? lastScanAt;
   final bool synced;
+  final String? crewId;
+  final bool archived;
+  final String? podId;
 
   Worker copyWith({
     String? name,
@@ -48,6 +54,10 @@ class Worker {
     WorkerStatus? lastStatus,
     DateTime? lastScanAt,
     bool? synced,
+    String? crewId,
+    bool? archived,
+    String? podId,
+    bool clearPodId = false,
   }) {
     return Worker(
       id: id,
@@ -65,6 +75,9 @@ class Worker {
       lastStatus: lastStatus ?? this.lastStatus,
       lastScanAt: lastScanAt ?? this.lastScanAt,
       synced: synced ?? this.synced,
+      crewId: crewId ?? this.crewId,
+      archived: archived ?? this.archived,
+      podId: clearPodId ? null : (podId ?? this.podId),
     );
   }
 
@@ -85,6 +98,9 @@ class Worker {
       'last_status': lastStatus?.name,
       'last_scan_at': lastScanAt?.millisecondsSinceEpoch,
       'synced': synced ? 1 : 0,
+      'crew_id': crewId,
+      'archived': archived ? 1 : 0,
+      'pod_id': podId,
     };
   }
 
@@ -107,6 +123,9 @@ class Worker {
           ? DateTime.fromMillisecondsSinceEpoch(map['last_scan_at'] as int)
           : null,
       synced: (map['synced'] as int? ?? 0) == 1,
+      crewId: map['crew_id'] as String?,
+      archived: (map['archived'] as int? ?? 0) == 1,
+      podId: map['pod_id'] as String?,
     );
   }
 

@@ -13,6 +13,10 @@ class DatabaseService {
   static Future<DatabaseService> open() async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, 'veltra.db');
+    return openPath(path);
+  }
+
+  static Future<DatabaseService> openPath(String path) async {
     final db = await openDatabase(
       path,
       version: DatabaseSchema.version,
@@ -25,8 +29,17 @@ class DatabaseService {
         await db.execute(DatabaseSchema.createScans);
         await db.execute(DatabaseSchema.createSyncQueue);
         await db.execute(DatabaseSchema.createWorkersUserIndex);
+        await db.execute(DatabaseSchema.createWorkersCrewIndex);
         await db.execute(DatabaseSchema.createShiftMeta);
         await db.execute(DatabaseSchema.createWeatherCache);
+        await db.execute(DatabaseSchema.createCrews);
+        await db.execute(DatabaseSchema.createWindows);
+        await db.execute(DatabaseSchema.createWindowsOneOpenIndex);
+        await db.execute(DatabaseSchema.createAttempts);
+        await db.execute(DatabaseSchema.createCheckIns);
+        await db.execute(DatabaseSchema.createCheckInsWindowIndex);
+        await db.execute(DatabaseSchema.createFollowUps);
+        await db.execute(DatabaseSchema.createDemoConfig);
       },
       onUpgrade: (db, oldVersion, newVersion) async {
         if (oldVersion < 2) {
@@ -53,6 +66,26 @@ class DatabaseService {
           }
           // Drop stale weather rows that predate air-temp caching.
           await db.delete('weather_cache');
+        }
+        if (oldVersion < 5) {
+          for (final statement in DatabaseSchema.migrateV5) {
+            final isAlter = statement.startsWith('ALTER TABLE');
+            try {
+              await db.execute(statement);
+            } catch (_) {
+              if (!isAlter) rethrow;
+              // Column may already exist from a partial migration.
+            }
+          }
+        }
+        if (oldVersion < 6) {
+          for (final statement in DatabaseSchema.migrateV6) {
+            try {
+              await db.execute(statement);
+            } catch (_) {
+              // Column may already exist when v5 created the newer table.
+            }
+          }
         }
       },
     );

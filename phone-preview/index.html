@@ -1,0 +1,1736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Veltra phone preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap">
+  <style>
+    :root {
+      --cream: #fff8f0;
+      --sand: #fff1e0;
+      --orange: #ff6b2c;
+      --yellow: #ffc93c;
+      --blue: #4da3ff;
+      --ink: #2c2416;
+      --secondary: #6b5e4e;
+      --muted: #9a8b78;
+      --glass: rgba(255, 255, 255, 0.72);
+      --line: rgba(255, 255, 255, 0.9);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: "Plus Jakarta Sans", sans-serif;
+      background: #e7d3bc;
+      color: var(--ink);
+    }
+    .stage {
+      min-height: 100%;
+      display: grid;
+      place-items: center;
+      padding: 28px 16px;
+    }
+    .phone {
+      width: 390px;
+      height: 844px;
+      background: #1c140c;
+      border-radius: 46px;
+      padding: 12px;
+      box-shadow: 0 24px 60px rgba(44, 36, 22, 0.28);
+    }
+    .screen {
+      height: 100%;
+      border-radius: 34px;
+      overflow: hidden;
+      background: linear-gradient(180deg, var(--cream), var(--sand));
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .status {
+      display: flex;
+      justify-content: space-between;
+      padding: 14px 22px 0;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+    .content {
+      flex: 1;
+      overflow: auto;
+      min-height: 0;
+      padding: 8px 20px 12px;
+      display: flex;
+      flex-direction: column;
+    }
+    .content.rise { animation: rise 220ms ease-out; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: none; }
+    }
+    .btn:active, .outline:active, .mini:active, .list-btn:active { transform: scale(0.97); }
+    h1 { font-size: 22px; margin: 8px 0 4px; }
+    h2 { font-size: 18px; margin: 0; font-weight: 600; }
+    p { margin: 0; }
+    .sub { color: var(--secondary); font-size: 16px; font-weight: 500; }
+    .muted { color: var(--muted); font-size: 16px; font-weight: 500; }
+    .caption { color: var(--muted); font-size: 12px; font-weight: 500; }
+    .role-pill {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      height: 34px;
+      margin: 6px 16px 0;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.42);
+      border: 1px solid var(--line);
+      backdrop-filter: blur(18px);
+      flex: none;
+    }
+    .role-thumb {
+      position: absolute;
+      top: 2px;
+      bottom: 2px;
+      left: 2px;
+      width: calc((100% - 4px) / 3);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.88);
+      box-shadow: 0 2px 8px rgba(44, 36, 22, 0.08);
+      transition: transform 280ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    .role-pill button {
+      position: relative;
+      z-index: 1;
+      background: transparent;
+      border: 0;
+      font: inherit;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+    }
+    .role-pill button[aria-pressed="true"] { color: var(--ink); }
+    .tab-bar {
+      margin: 0 16px 12px;
+      padding: 8px 4px 6px;
+      border-radius: 26px;
+      background: rgba(255, 255, 255, 0.82);
+      border: 1.5px solid var(--line);
+      backdrop-filter: blur(24px);
+      box-shadow: 0 12px 28px rgba(255, 107, 44, 0.16);
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      flex: none;
+    }
+    .tab-bar button {
+      background: transparent;
+      border: 0;
+      font: inherit;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 0;
+    }
+    .tab-bar .mark {
+      width: 44px;
+      height: 28px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+    }
+    .tab-bar button[aria-pressed="true"] { color: var(--orange); }
+    .tab-bar button[aria-pressed="true"] .mark { background: var(--orange); color: white; }
+    .btn, .text-btn, .list-btn {
+      font: inherit;
+      border: 0;
+      cursor: pointer;
+    }
+    .roles button {
+      flex: 1;
+      height: 52px;
+      border-radius: 999px;
+      background: var(--glass);
+      color: var(--secondary);
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .roles button[aria-pressed="true"] {
+      background: var(--orange);
+      color: white;
+    }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .chip {
+      background: var(--glass);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--secondary);
+    }
+    .card {
+      background: var(--glass);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 16px;
+      box-shadow: 0 8px 32px rgba(232, 168, 74, 0.18);
+    }
+    .grow { flex: 1; }
+    .btn {
+      width: 100%;
+      height: 72px;
+      border-radius: 16px;
+      background: var(--orange);
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .btn:disabled { opacity: 0.45; cursor: default; }
+    .btn.secondary, .btn.compact { height: 52px; margin-top: 12px; }
+    .text-btn {
+      background: transparent;
+      color: var(--orange);
+      height: 44px;
+      font-size: 16px;
+      font-weight: 500;
+    }
+    .text-btn.quiet { color: var(--muted); }
+    .row {
+      width: 100%;
+      text-align: left;
+      background: var(--glass);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 16px;
+      margin-bottom: 10px;
+      min-height: 64px;
+    }
+    .row strong { display: block; font-size: 18px; }
+    .row span { color: var(--muted); font-size: 12px; }
+    .measure {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 6px 0;
+      font-size: 16px;
+    }
+    .measure span { color: var(--secondary); }
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, var(--cream), var(--sand));
+      padding: 28px 20px 20px;
+      display: flex;
+      flex-direction: column;
+    }
+    .sheet {
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+      background: rgba(44, 36, 22, 0.28);
+      display: flex;
+      align-items: flex-end;
+    }
+    .sheet .card {
+      width: 100%;
+      max-height: 86%;
+      overflow: auto;
+      border-radius: 20px 20px 0 0;
+      padding-bottom: 24px;
+    }
+    .list-btn {
+      width: 100%;
+      text-align: left;
+      background: transparent;
+      min-height: 52px;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+    .chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .mini {
+      display: inline-block;
+      margin: 0;
+      padding: 12px 14px;
+      border-radius: 999px;
+      background: var(--glass);
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .mini[aria-pressed="true"] { background: var(--orange); color: white; }
+    .field {
+      width: 100%;
+      margin-top: 8px;
+      border: 0;
+      border-radius: 12px;
+      padding: 12px;
+      font: inherit;
+      background: white;
+      color: var(--ink);
+    }
+    .top-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .top-row strong { font-size: 18px; }
+    .chip.weather { color: var(--blue); background: rgba(77, 163, 255, 0.14); }
+    .scan-circle {
+      width: 220px;
+      height: 220px;
+      margin: 0 auto;
+      border: 0;
+      border-radius: 999px;
+      background: var(--orange);
+      color: white;
+      font: inherit;
+      font-size: 18px;
+      font-weight: 600;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 12px 32px rgba(255, 107, 44, 0.35);
+      cursor: pointer;
+    }
+    .scan-circle:disabled { opacity: 0.45; cursor: default; box-shadow: none; }
+    .verdict {
+      border-radius: 28px;
+      padding: 22px 16px 18px;
+      text-align: center;
+    }
+    .verdict h1 { margin: 0; font-size: 32px; color: inherit; }
+    .verdict.green { background: #e8f8ef; color: #2ecc71; }
+    .verdict.amber { background: #fef5e7; color: #f39c12; }
+    .verdict.red { background: #fdedec; color: #e74c3c; }
+    .verdict .ink { color: var(--ink); }
+    .verdict .sub { color: var(--secondary); }
+    .verdict .caption { color: var(--muted); }
+    .avatar-ring {
+      width: 86px;
+      height: 86px;
+      margin: 0 auto 10px;
+      border-radius: 999px;
+      border: 3px solid currentColor;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 999px;
+      background: rgba(255, 201, 60, 0.55);
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: 700;
+    }
+    .saved-scroll { flex: 1; min-height: 0; overflow: auto; }
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .stat {
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+      box-shadow: 0 8px 24px rgba(232, 168, 74, 0.18);
+      text-align: left;
+    }
+    .stat-top {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .stat strong { display: block; margin-top: 8px; font-size: 18px; }
+    .person {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .mini-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      border: 2px solid currentColor;
+      background: rgba(255, 201, 60, 0.55);
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      flex: none;
+    }
+    .mini-avatar.waiting { color: var(--blue); }
+    .mini-avatar.checked { color: #2ecc71; }
+    .mini-avatar.retry { color: #f39c12; }
+    .mini-avatar.missed { color: #e74c3c; }
+    .person-copy { display: block; text-align: left; min-width: 0; }
+    .person-copy strong { display: block; }
+    .person-copy .status { font-size: 12px; font-weight: 600; }
+    .person-copy .waiting { color: var(--blue); }
+    .person-copy .checked { color: #2ecc71; }
+    .person-copy .retry { color: #f39c12; }
+    .person-copy .missed { color: #e74c3c; }
+    .crew-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 64px;
+      padding: 10px 0;
+    }
+    .crew-row + .crew-row { border-top: 1px solid var(--line); }
+    .card > .caption + .crew-row { margin-top: 4px; }
+    .crew-row .person-copy { flex: 1; }
+    .crew-row .outline.slim { align-self: center; margin-left: auto; }
+    .avatar-ring.waiting { color: var(--blue); }
+    .avatar-ring.checked { color: #2ecc71; }
+    .avatar-ring.retry { color: #f39c12; }
+    .avatar-ring.missed { color: #e74c3c; }
+    .outline {
+      width: 100%;
+      height: 52px;
+      margin-top: 12px;
+      border-radius: 16px;
+      background: white;
+      color: var(--orange);
+      border: 1.5px solid var(--orange);
+      font: inherit;
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .outline.slim {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      align-self: flex-start;
+      width: auto;
+      height: 40px;
+      margin: 0;
+      padding: 0 14px;
+    }
+    .outline.end { margin-left: auto; }
+    .profile-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 8px 0;
+    }
+    .profile-line span { color: var(--secondary); }
+    .metric {
+      margin-left: auto;
+      border: 0;
+      border-radius: 12px;
+      padding: 8px 10px;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      background: white;
+      color: var(--ink);
+    }
+    .counts {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .count {
+      background: var(--glass);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px 14px;
+    }
+    .count strong { display: block; font-size: 28px; line-height: 1.1; }
+    .count span { font-size: 12px; font-weight: 600; }
+    .count.waiting strong, .count.waiting span { color: var(--blue); }
+    .count.checked strong, .count.checked span { color: #2ecc71; }
+    .count.retry strong, .count.retry span { color: #f39c12; }
+    .count.missed strong, .count.missed span { color: #e74c3c; }
+    h2.waiting { color: var(--blue); }
+    h2.checked { color: #2ecc71; }
+    h2.retry { color: #f39c12; }
+    h2.missed { color: #e74c3c; }
+    @media (max-width: 480px) {
+      body { background: var(--cream); }
+      .stage { padding: 0; }
+      .phone { width: 100%; height: 100vh; border-radius: 0; padding: 0; box-shadow: none; }
+      .screen { border-radius: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="phone">
+      <div class="screen" id="screen"></div>
+    </div>
+  </div>
+  <script>
+    const KEY = "veltra-checkin-preview-v1";
+    const SEED_WORKERS = [
+      { id: "avery", name: "Avery", archived: false, pod: "", crewId: "demo", employeeId: "A-101", age: 29, heightCm: 168, weightKg: 62 },
+      { id: "blake", name: "Blake", archived: false, pod: "", crewId: "demo", employeeId: "B-102", age: 34, heightCm: 180, weightKg: 82 },
+      { id: "casey", name: "Casey", archived: false, pod: "", crewId: "demo", employeeId: "C-103", age: 26, heightCm: 163, weightKg: 58 }
+    ];
+    const SCENARIOS = {
+      complete: { label: "Complete reading", saves: true, temp: 36.8, volume: 8, conductivity: 640 },
+      temperatureOnly: { label: "Temperature only", saves: true, temp: 36.8, volume: null, conductivity: null },
+      dryStrip: { label: "Dry strip", saves: false, message: "The strip is dry." },
+      poorContact: { label: "Poor contact", saves: false, message: "Reseat the cartridge." },
+      timeout: { label: "Timeout", saves: false, message: "Timed out. Try again." }
+    };
+
+    const screen = document.getElementById("screen");
+    let timer = null;
+    let frameKey = "";
+
+    function seed() {
+      return {
+        role: "worker",
+        workerId: "avery",
+        crewId: "demo",
+        crews: [{ id: "demo", name: "Demo Crew", site: "Test Site" }],
+        workers: SEED_WORKERS.map((worker) => ({ ...worker })),
+        windowOpen: true,
+        windowId: "window-1",
+        openedAt: new Date().toISOString(),
+        windows: {
+          demo: { id: "window-1", open: true, openedAt: new Date().toISOString() }
+        },
+        checkIns: [],
+        followUps: [],
+        source: "simulated",
+        scenario: "complete",
+        presentedPod: "",
+        metric: "temp",
+        tabs: { worker: "scan", supervisor: "dashboard", admin: "bench" },
+        view: "home",
+        phase: "hold",
+        error: "",
+        note: "",
+        savedId: null,
+        detailId: null,
+        pendingWorkerId: null,
+        measurementsOpen: false
+      };
+    }
+
+    function load() {
+      try {
+        const raw = localStorage.getItem(KEY);
+        if (!raw) return seed();
+        const parsed = JSON.parse(raw);
+        const base = seed();
+        const next = {
+          ...base,
+          ...parsed,
+          view: "home",
+          phase: "hold",
+          error: "",
+          note: "",
+          pendingWorkerId: null
+        };
+        if (!Array.isArray(parsed.workers)) next.workers = base.workers;
+        next.workers = next.workers.map((person) => {
+          const starter = SEED_WORKERS.find((item) => item.id === person.id);
+          if (!starter) return person;
+          if (person.age == null && person.heightCm == null && person.weightKg == null) {
+            return {
+              ...person,
+              employeeId: person.employeeId || starter.employeeId,
+              age: starter.age,
+              heightCm: starter.heightCm,
+              weightKg: starter.weightKg
+            };
+          }
+          return person;
+        });
+        if (!Array.isArray(parsed.crews)) next.crews = base.crews;
+        next.crews = next.crews.map((crew) =>
+          crew.id === "demo" && !crew.site ? { ...crew, site: "Test Site" } : crew
+        );
+        if (!Array.isArray(parsed.followUps)) next.followUps = [];
+        if (!parsed.windowId) next.windowId = "window-1";
+        if (!parsed.crewId) next.crewId = "demo";
+        if (!parsed.source) next.source = "simulated";
+        if (!parsed.scenario) next.scenario = "complete";
+        next.tabs = {
+          worker: "scan",
+          supervisor: "dashboard",
+          admin: "bench",
+          ...(parsed.tabs || {})
+        };
+        if (!parsed.tabs) next.role = "worker";
+        if (parsed.view === "signedout") next.view = "home";
+        if (!parsed.windows) {
+          next.windows = {};
+          next.windows[next.crewId] = {
+            id: next.windowId,
+            open: !!next.windowOpen,
+            openedAt: next.openedAt
+          };
+        }
+        next.checkIns = (parsed.checkIns || []).map((row) => ({
+          rate: null,
+          ...row,
+          windowId: row.windowId || next.windowId,
+          crewId: row.crewId || "demo"
+        }));
+        return next;
+      } catch (error) {
+        return seed();
+      }
+    }
+
+    let state = load();
+
+    function save() {
+      localStorage.setItem(KEY, JSON.stringify(state));
+    }
+
+    function worker(id) {
+      return state.workers.find((item) => item.id === id) || {
+        id: "",
+        name: "Worker",
+        pod: "",
+        archived: false,
+        crewId: state.crewId
+      };
+    }
+
+    function activeWorkers() {
+      return state.workers.filter((item) => item.crewId === state.crewId && !item.archived);
+    }
+
+    function currentCrew() {
+      return state.crews.find((crew) => crew.id === state.crewId) || { id: "demo", name: "Demo Crew", site: "Test Site" };
+    }
+
+    function sourceLabel(source) {
+      if (source === "tag") return "Test tag";
+      if (source === "pod") return "Sensor pod";
+      return "Simulated";
+    }
+
+    function timeLabel(iso) {
+      return new Date(iso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+    }
+
+    function latestFor(id) {
+      const rows = state.checkIns.filter((row) => row.workerId === id);
+      return rows[0] || null;
+    }
+
+    function inWindow(id) {
+      return state.checkIns.find((row) => row.workerId === id && row.windowId === state.windowId) || null;
+    }
+
+    function recheckFor(id) {
+      return state.followUps.some((row) => row.workerId === id && row.windowId === state.windowId);
+    }
+
+    function rosterStatus(id) {
+      const row = inWindow(id);
+      if (!state.windowOpen && !row) return "Missed";
+      if (recheckFor(id)) return "Retry requested";
+      if (row) return "Checked in";
+      if (state.windowOpen) return "Waiting";
+      return "Missed";
+    }
+
+    function checkedCount() {
+      return activeWorkers().filter((item) => inWindow(item.id)).length;
+    }
+
+    function clearTimer() {
+      if (timer) {
+        clearTimeout(timer);
+        timer = null;
+      }
+    }
+
+    function set(partial) {
+      state = { ...state, ...partial };
+      save();
+      render();
+    }
+
+    function parseTagLine(raw) {
+      const line = (raw || "").trim();
+      if (!line || line.indexOf("\n") !== -1 || line.indexOf("\r") !== -1) {
+        return { saves: false, message: "Unrelated tag." };
+      }
+      const fields = line.split(",").map((field) => field.trim());
+      const prefix = fields[0];
+      if (prefix !== "VELTRA1" && prefix !== "VELTRA2") {
+        return {
+          saves: false,
+          message: prefix.indexOf("VELTRA") === 0 ? "Unknown prefix." : "Unrelated tag."
+        };
+      }
+      const expected = prefix === "VELTRA1" ? 3 : 5;
+      if (fields.length < expected) return { saves: false, message: "Too few fields." };
+      if (fields.length > expected) return { saves: false, message: "Too many fields." };
+      if (!fields[1]) return { saves: false, message: "Missing pod id." };
+      const temperature = Number(fields[2]);
+      if (fields[2] === "" || Number.isNaN(temperature)) {
+        return { saves: false, message: "Not a number." };
+      }
+      if (temperature < 30 || temperature > 42) {
+        return { saves: false, message: "Temperature out of range." };
+      }
+      let volume = null;
+      let conductivity = null;
+      if (prefix === "VELTRA2") {
+        volume = Number(fields[3]);
+        conductivity = Number(fields[4]);
+        if (fields[3] === "" || fields[4] === "" || Number.isNaN(volume) || Number.isNaN(conductivity)) {
+          return { saves: false, message: "Not a number." };
+        }
+        if (volume < 0) return { saves: false, message: "Volume out of range." };
+        if (conductivity < 0) return { saves: false, message: "Conductivity out of range." };
+      }
+      return { saves: true, podId: fields[1], temp: temperature, volume: volume, conductivity: conductivity };
+    }
+
+    function startSession() {
+      clearTimer();
+      if (state.source === "tag") {
+        set({ view: "session", phase: "paste", error: "" });
+        return;
+      }
+      if (state.source === "pod") {
+        set({
+          view: "session",
+          phase: "failed",
+          error: "This preview does not read a tag. A phone reports what it sees and does not save."
+        });
+        return;
+      }
+      set({ view: "session", phase: "hold", error: "" });
+      timer = setTimeout(() => {
+        if (state.view !== "session" || state.phase !== "hold") return;
+        set({ phase: "reading" });
+        timer = setTimeout(finishRead, 800);
+      }, 700);
+    }
+
+    function finishRead() {
+      if (state.view !== "session" || state.phase !== "reading") return;
+      clearTimer();
+      const person = worker(state.workerId);
+      const presented = (state.presentedPod || "").trim();
+      const assigned = (person.pod || "").trim();
+      if (presented && assigned && presented !== assigned) {
+        set({ phase: "failed", error: "Wrong pod for this worker." });
+        return;
+      }
+      const scenario = SCENARIOS[state.scenario] || SCENARIOS.complete;
+      if (!scenario.saves) {
+        set({ phase: "failed", error: scenario.message });
+        return;
+      }
+      const pod = presented || assigned;
+      const previous = state.checkIns.find((row) =>
+        row.workerId === state.workerId &&
+        row.windowId === state.windowId &&
+        row.volume != null &&
+        (row.pod || "") === pod
+      );
+      let rate = null;
+      if (scenario.volume != null && previous) {
+        const minutes = (Date.now() - new Date(previous.capturedAt).getTime()) / 60000;
+        if (
+          minutes > 0 && minutes <= 240 &&
+          scenario.volume < 25 && previous.volume < 25 &&
+          scenario.volume >= previous.volume
+        ) {
+          rate = (scenario.volume - previous.volume) / minutes;
+        }
+      }
+      const row = {
+        id: "check-" + Date.now(),
+        workerId: state.workerId,
+        windowId: state.windowId,
+        crewId: state.crewId,
+        capturedAt: new Date().toISOString(),
+        source: "Simulated",
+        pod,
+        temp: scenario.temp,
+        volume: scenario.volume,
+        conductivity: scenario.conductivity,
+        rate
+      };
+      set({
+        checkIns: [row, ...state.checkIns],
+        view: "saved",
+        savedId: row.id,
+        measurementsOpen: false
+      });
+    }
+
+    function timeoutRead() {
+      clearTimer();
+      set({ view: "session", phase: "failed", error: "Timed out. Try again." });
+    }
+
+    function cancelRead() {
+      clearTimer();
+      set({ view: "home", phase: "hold", error: "" });
+    }
+
+    function confirmWorker(id) {
+      if (id === state.workerId) {
+        set({ view: "home", pendingWorkerId: null });
+        return;
+      }
+      set({ view: "confirm", pendingWorkerId: id });
+    }
+
+    function shown(value, digits, suffix) {
+      if (value == null || Number.isNaN(Number(value))) return "Unavailable";
+      const text = digits === 0 ? String(Math.round(value)) : Number(value).toFixed(digits);
+      return text + suffix;
+    }
+
+    function measurements(row) {
+      const line = (label, value) =>
+        '<div class="measure"><span>' + label + '</span><strong>' + value + '</strong></div>';
+      return (
+        line("Forehead temperature", shown(row.temp, 1, " °C")) +
+        line("Strip volume", shown(row.volume, 1, " µL")) +
+        line("Sweat conductivity", shown(row.conductivity, 0, " µS/cm")) +
+        line("Sweat rate", shown(row.rate, 1, " µL/min"))
+      );
+    }
+
+    function roleIndex() {
+      if (state.role === "supervisor") return 1;
+      if (state.role === "admin") return 2;
+      return 0;
+    }
+
+    function rolePill() {
+      const button = (role, label) =>
+        '<button type="button" data-role="' + role + '" aria-pressed="' + (state.role === role) + '">' + label + '</button>';
+      return '<div class="role-pill">' +
+        '<span class="role-thumb" style="transform:translateX(' + (roleIndex() * 100) + '%)"></span>' +
+        button("worker", "Worker") + button("supervisor", "Supervisor") + button("admin", "Admin") +
+        '</div>';
+    }
+
+    function currentTab() {
+      const tabs = state.tabs || { worker: "scan", supervisor: "dashboard", admin: "bench" };
+      return tabs[state.role] || (state.role === "supervisor" ? "dashboard" : state.role === "admin" ? "bench" : "scan");
+    }
+
+    function tabIcon(tab) {
+      const paths = {
+        scan: '<circle cx="12" cy="12" r="3"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2"/>',
+        history: '<path d="M4 16l4-5 4 3 6-8"/>',
+        settings: '<circle cx="12" cy="12" r="3"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6 17 7M7 17l-1.4 1.4"/>',
+        dashboard: '<rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/>',
+        workers: '<circle cx="9" cy="9" r="3"/><circle cx="16" cy="10" r="2"/><path d="M4 18c1-3 3-4 5-4s4 1 5 4M14 14c2 0 3 1 4 3"/>',
+        bench: '<path d="M4 8h16M7 8v8M12 8v8M17 8v8"/>',
+        crew: '<circle cx="12" cy="8" r="3"/><path d="M6 19c1-4 3-5 6-5s5 1 6 5"/>',
+        tools: '<path d="M14 6l4 4-8 8H6v-4z"/>'
+      };
+      return '<svg class="mark" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + (paths[tab] || '') + '</svg>';
+    }
+
+    function tabsForRole() {
+      if (state.role === "supervisor") return [["dashboard", "Dashboard"], ["workers", "Workers"], ["settings", "Settings"]];
+      if (state.role === "admin") return [["bench", "Bench"], ["crew", "Crew"], ["tools", "Tools"]];
+      return [["scan", "Scan"], ["history", "History"], ["settings", "Settings"]];
+    }
+
+    function tabBar() {
+      const current = currentTab();
+      const buttons = tabsForRole().map((item) =>
+        '<button type="button" data-tab="' + item[0] + '" aria-pressed="' + (current === item[0]) + '">' +
+        tabIcon(item[0]) + item[1] + '</button>'
+      ).join("");
+      return '<div class="tab-bar">' + buttons + '</div>';
+    }
+
+    function slot(title) {
+      return '<div class="grow"></div><h1 style="text-align:center">' + title + '</h1><div class="grow"></div>';
+    }
+
+    function home() {
+      const person = worker(state.workerId);
+      const recheck = state.workerId && recheckFor(state.workerId)
+        ? '<p class="sub" id="recheck-banner" style="color:var(--orange);margin-top:10px">Recheck requested</p>'
+        : "";
+      const closed = state.windowOpen
+        ? ""
+        : '<p class="sub" style="margin-top:10px">No open window.</p>';
+      return (
+        '<div class="top-row"><span class="chip weather">Weather unavailable</span><strong>' + person.name + '</strong></div>' +
+        recheck +
+        closed +
+        '<div class="grow"></div>' +
+        '<button class="scan-circle" id="check-in" type="button"' + (state.windowOpen ? "" : " disabled") + '>' +
+        '<svg viewBox="0 0 24 24" width="52" height="52" fill="none" stroke="white" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6 17 7M7 17l-1.4 1.4"/></svg>' +
+        'Check in</button>' +
+        '<button class="text-btn quiet" id="manual-entry" type="button"' + (state.windowOpen ? "" : " disabled") + '>Manual entry</button>' +
+        '<div class="grow"></div>'
+      );
+    }
+
+    function verdictFor(row) {
+      if (!row || row.temp == null || Number.isNaN(Number(row.temp))) return null;
+      let score = 0;
+      const temp = Number(row.temp);
+      if (temp > 38.5) score += 3;
+      else if (temp > 37.5) score += 1;
+      const rate = row.rate == null ? 0 : Number(row.rate) * 60 / 1000000;
+      if (rate > 1.5) score += 2;
+      else if (rate > 1) score += 1;
+      const wbgt = row.wbgt == null ? null : Number(row.wbgt);
+      if (wbgt != null && !Number.isNaN(wbgt)) {
+        if (wbgt > 32) score += 2;
+        else if (wbgt > 28) score += 1;
+      }
+      if (temp > 38 && rate > 1.5 && wbgt != null && wbgt > 30) score += 3;
+      if (score >= 8) return { label: "RED", action: "Rest 15 min in shade", tone: "red" };
+      if (score >= 4) return { label: "AMBER", action: "Drink 500mL water · re-scan in 30 min", tone: "amber" };
+      return { label: "GREEN", action: "Continue work", tone: "green" };
+    }
+
+    function runPayload() {
+      const input = document.getElementById("payload-line");
+      const parsed = parseTagLine(input ? input.value : "");
+      if (!parsed.saves) {
+        set({ phase: "failed", error: parsed.message });
+        return;
+      }
+      const assigned = (worker(state.workerId).pod || "").trim();
+      if (assigned && parsed.podId !== assigned) {
+        set({ phase: "failed", error: "Wrong pod for this worker." });
+        return;
+      }
+      const row = {
+        id: "check-" + Date.now(),
+        workerId: state.workerId,
+        windowId: state.windowId,
+        crewId: state.crewId,
+        capturedAt: new Date().toISOString(),
+        source: "Test tag",
+        pod: parsed.podId,
+        temp: parsed.temp,
+        volume: parsed.volume,
+        conductivity: parsed.conductivity,
+        rate: null
+      };
+      set({
+        checkIns: [row, ...state.checkIns],
+        view: "saved",
+        savedId: row.id,
+        measurementsOpen: false
+      });
+    }
+
+    function session() {
+      if (state.phase === "paste") {
+        return '<div class="overlay"><h1>Paste a payload line</h1><p class="sub">This preview did not read a tag.</p>' +
+          '<input class="field" id="payload-line" placeholder="VELTRA2,TAG02,35.1,12.5,820">' +
+          '<div class="grow"></div><button class="btn" id="run-payload" type="button">Check this line</button>' +
+          '<button class="text-btn quiet" id="cancel-read" type="button">Cancel</button></div>';
+      }
+      const title = state.phase === "failed"
+        ? state.error
+        : (state.phase === "reading" ? "Reading" : "Hold phone near the pod");
+      const primary = state.phase === "failed"
+        ? '<button class="btn" id="back-ready" type="button">Back</button>'
+        : '<button class="btn" id="cancel-read" type="button">Cancel</button>';
+      const timeout = state.phase === "failed"
+        ? ""
+        : '<button class="text-btn quiet" id="timeout" type="button">Simulate timeout</button>';
+      return '<div class="overlay"><h1>' + title + '</h1><div class="grow"></div>' + primary + timeout + '</div>';
+    }
+
+    function iconSvg(kind) {
+      const paths = {
+        temp: '<path d="M10 14.5a2 2 0 1 0 4 0V6a2 2 0 1 0-4 0z"/>',
+        drop: '<path d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z"/>',
+        bolt: '<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',
+        rate: '<path d="M4 15c2-5 4-7 8-7s6 2 8 7"/><path d="M8 18h.01M12 18h.01M16 18h.01"/>',
+        sun: '<circle cx="12" cy="12" r="3.5"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2"/>'
+      };
+      return '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + (paths[kind] || "") + '</svg>';
+    }
+
+    function statTile(label, value, kind) {
+      return '<div class="stat"><div class="stat-top">' + iconSvg(kind) + '<span>' + label + '</span></div><strong>' + value + '</strong></div>';
+    }
+
+    function saved() {
+      const row = state.checkIns.find((item) => item.id === state.savedId) || state.checkIns[0];
+      if (!row) return home();
+      const person = worker(row.workerId);
+      const initial = (person.name || "?").charAt(0).toUpperCase();
+      const verdict = verdictFor(row);
+      const tone = verdict ? verdict.tone : "";
+      const rows = state.checkIns.filter((item) => item.workerId === row.workerId);
+      const tiles = [
+        statTile("Forehead", shown(row.temp, 1, " °C"), "temp"),
+        statTile("Strip volume", shown(row.volume, 1, " µL"), "drop"),
+        statTile("Conductivity", shown(row.conductivity, 0, " µS/cm"), "bolt"),
+        statTile("Sweat rate", shown(row.rate, 1, " µL/min"), "rate")
+      ];
+      if (row.wbgt != null && !Number.isNaN(Number(row.wbgt))) {
+        tiles.push(statTile("WBGT", shown(row.wbgt, 1, " °C"), "sun"));
+      }
+      const heading = verdict
+        ? '<div class="avatar-ring"><div class="avatar">' + initial + '</div></div><h1>' + verdict.label + '</h1><h2 class="ink">' + person.name + '</h2><p class="sub">' + verdict.action + '</p>'
+        : '<div class="avatar-ring"><div class="avatar">' + initial + '</div></div><h1 class="ink">Saved</h1><h2 class="ink">' + person.name + '</h2>';
+      const metric = state.metric || "temp";
+      const option = (value, label) =>
+        '<option value="' + value + '"' + (metric === value ? " selected" : "") + '>' + label + '</option>';
+      return '<div class="overlay"><div class="saved-scroll"><div class="verdict ' + tone + '" id="verdict">' + heading +
+        '<p class="caption">' + timeLabel(row.capturedAt) + ' · ' + row.source + '</p></div><div class="stats">' + tiles.join("") + '</div>' +
+        '<div class="top-row" style="margin-top:16px"><p class="caption">Trend</p><select class="metric" id="metric">' +
+        option("temp", "Forehead temperature") + option("volume", "Strip volume") +
+        option("conductivity", "Conductivity") + option("rate", "Sweat rate") +
+        '</select></div><div class="card" style="margin-top:8px">' + trendMarkup(rows) + '</div></div>' +
+        '<button class="btn" id="done" type="button" style="margin-top:12px">Done</button></div>';
+    }
+
+    function trendMarkup(rows) {
+      const metric = state.metric || "temp";
+      const pick = {
+        temp: (row) => row.temp,
+        volume: (row) => row.volume,
+        conductivity: (row) => row.conductivity,
+        rate: (row) => row.rate
+      }[metric];
+      const values = rows.slice().reverse().map(pick).filter((value) => value != null && !Number.isNaN(Number(value))).map(Number);
+      if (values.length < 2) return '<p class="sub" id="trend-empty">Not enough data</p>';
+      const min = Math.min.apply(null, values);
+      const max = Math.max.apply(null, values);
+      const span = max - min || 1;
+      const points = values.map((value, index) => {
+        const x = (index / (values.length - 1)) * 280;
+        const y = 112 - ((value - min) / span) * 96;
+        return x + "," + y;
+      }).join(" ");
+      return '<svg viewBox="0 0 280 120" width="100%" height="120"><polyline points="' + points + '" fill="none" stroke="#ff6b2c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    }
+
+    function history() {
+      const person = worker(state.workerId);
+      const rows = state.checkIns.filter((row) => row.workerId === person.id);
+      const cards = rows.length
+        ? rows.map((row) => {
+            const verdict = verdictFor(row);
+            const detail = verdict ? row.source + " · " + verdict.label : row.source;
+            return '<div class="card" style="margin-bottom:10px"><h2>' + timeLabel(row.capturedAt) + '</h2><p class="caption">' + detail + '</p></div>';
+          }).join("")
+        : '<p class="sub">No check-ins yet</p>';
+      return '<div class="top-row"><h1 style="margin:0">' + person.name + '</h1>' +
+        '<select class="metric" id="metric">' +
+        '<option value="temp"' + ((state.metric || "temp") === "temp" ? " selected" : "") + '>Forehead temperature</option>' +
+        '<option value="volume"' + (state.metric === "volume" ? " selected" : "") + '>Strip volume</option>' +
+        '<option value="conductivity"' + (state.metric === "conductivity" ? " selected" : "") + '>Conductivity</option>' +
+        '<option value="rate"' + (state.metric === "rate" ? " selected" : "") + '>Sweat rate</option>' +
+        '</select></div>' +
+        '<div class="card" style="margin-top:12px"><p class="caption">Trend</p>' + trendMarkup(rows) + '</div>' +
+        '<div style="height:12px"></div>' + cards;
+    }
+
+    function workerSettings() {
+      const person = worker(state.workerId);
+      const opened = state.windowId
+        ? (state.windowOpen ? "Window open · " + timeLabel(state.openedAt) : "Window closed · " + timeLabel(state.openedAt))
+        : "No open window";
+      return '<h1>Settings</h1>' +
+        '<div class="card"><p class="caption">Worker</p><h2>' + person.name + '</h2>' +
+        '<button class="outline" id="switch-worker" type="button">Switch worker</button></div>' +
+        '<div class="card" style="margin-top:12px"><p class="caption">Scan source</p><div class="chip-row">' +
+        chip("source-simulated", "Simulated", state.source === "simulated") +
+        chip("source-tag", "Physical test tag", state.source === "tag") +
+        chip("source-pod", "Sensor pod", state.source === "pod") + '</div></div>' +
+        '<div class="card" style="margin-top:12px"><p class="caption">Window</p><p class="sub">' + opened + '</p></div>';
+    }
+
+    function manualSheet() {
+      return '<div class="sheet"><div class="card"><h2>Manual entry</h2>' +
+        '<input class="field" id="manual-temp" inputmode="decimal" placeholder="Forehead °C">' +
+        '<input class="field" id="manual-volume" inputmode="decimal" placeholder="Strip µL">' +
+        '<input class="field" id="manual-conductivity" inputmode="decimal" placeholder="Conductivity µS/cm">' +
+        (state.error ? '<p class="sub" id="manual-error">' + state.error + '</p>' : '') +
+        '<button class="btn secondary" id="save-manual" type="button">Save</button>' +
+        '<button class="text-btn quiet" id="close-manual" type="button">Cancel</button></div></div>';
+    }
+
+    function saveManual() {
+      const tempRaw = (document.getElementById("manual-temp").value || "").trim();
+      const volumeRaw = (document.getElementById("manual-volume").value || "").trim();
+      const condRaw = (document.getElementById("manual-conductivity").value || "").trim();
+      if (!tempRaw) {
+        set({ view: "manual", error: "Enter a forehead temperature." });
+        return;
+      }
+      const temp = Number(tempRaw);
+      if (Number.isNaN(temp)) {
+        set({ view: "manual", error: "Not a number." });
+        return;
+      }
+      if (temp < 30 || temp > 42) {
+        set({ view: "manual", error: "Temperature out of range." });
+        return;
+      }
+      let volume = null;
+      if (volumeRaw) {
+        volume = Number(volumeRaw);
+        if (Number.isNaN(volume)) {
+          set({ view: "manual", error: "Not a number." });
+          return;
+        }
+        if (volume < 0) {
+          set({ view: "manual", error: "Volume out of range." });
+          return;
+        }
+      }
+      let conductivity = null;
+      if (condRaw) {
+        conductivity = Number(condRaw);
+        if (Number.isNaN(conductivity)) {
+          set({ view: "manual", error: "Not a number." });
+          return;
+        }
+        if (conductivity < 0) {
+          set({ view: "manual", error: "Conductivity out of range." });
+          return;
+        }
+      }
+      const person = worker(state.workerId);
+      const presented = (state.presentedPod || "").trim();
+      const assigned = (person.pod || "").trim();
+      if (presented && assigned && presented !== assigned) {
+        set({ view: "manual", error: "Wrong pod for this worker." });
+        return;
+      }
+      const pod = presented || assigned;
+      const previous = state.checkIns.find((row) =>
+        row.workerId === state.workerId &&
+        row.windowId === state.windowId &&
+        row.volume != null &&
+        (row.pod || "") === pod
+      );
+      let rate = null;
+      if (volume != null && previous) {
+        const minutes = (Date.now() - new Date(previous.capturedAt).getTime()) / 60000;
+        if (
+          minutes > 0 && minutes <= 240 &&
+          volume < 25 && previous.volume < 25 &&
+          volume >= previous.volume
+        ) {
+          rate = (volume - previous.volume) / minutes;
+        }
+      }
+      const row = {
+        id: "check-" + Date.now(),
+        workerId: state.workerId,
+        windowId: state.windowId,
+        crewId: state.crewId,
+        capturedAt: new Date().toISOString(),
+        source: "Simulated",
+        pod,
+        temp,
+        volume,
+        conductivity,
+        rate
+      };
+      set({
+        checkIns: [row, ...state.checkIns],
+        view: "saved",
+        savedId: row.id,
+        error: ""
+      });
+    }
+
+    function windowText() {
+      if (!state.windowId) return "No open window";
+      return (state.windowOpen ? "Window open · " : "Window closed · ") + timeLabel(state.openedAt);
+    }
+
+    function statusTone(status) {
+      if (status === "Waiting") return "waiting";
+      if (status === "Checked in") return "checked";
+      if (status === "Retry requested") return "retry";
+      if (status === "Missed") return "missed";
+      return "";
+    }
+
+    function personRow(person) {
+      const row = inWindow(person.id);
+      const status = state.windowId ? rosterStatus(person.id) : "No open window";
+      const tone = statusTone(status);
+      const detail = row ? status + " · " + timeLabel(row.capturedAt) : status;
+      const initial = (person.name || "?").charAt(0).toUpperCase();
+      return '<button class="row person" type="button" data-detail="' + person.id + '">' +
+        '<span class="mini-avatar ' + tone + '">' + initial + '</span>' +
+        '<span class="person-copy"><strong>' + person.name + '</strong><span class="status ' + tone + '">' + detail + '</span></span></button>';
+    }
+
+    function dashboard() {
+      const people = activeWorkers();
+      const counts = { Waiting: 0, "Checked in": 0, "Retry requested": 0, Missed: 0 };
+      if (state.windowId) {
+        people.forEach((person) => {
+          const status = rosterStatus(person.id);
+          counts[status] = (counts[status] || 0) + 1;
+        });
+      }
+      const tile = (key, label, tone) =>
+        '<div class="count ' + tone + '"><strong>' + (state.windowId ? counts[key] : 0) + '</strong><span>' + label + '</span></div>';
+      const exceptions = state.windowId
+        ? people.filter((person) => rosterStatus(person.id) !== "Checked in").map(personRow).join("")
+        : "";
+      const empty = state.windowId
+        ? '<p class="sub">Everyone is checked in.</p>'
+        : '<p class="sub">No open window.</p>';
+      return '<h1>Dashboard</h1><p class="sub">' + windowText() + '</p><div class="counts" style="margin-top:12px">' +
+        tile("Waiting", "Waiting", "waiting") +
+        tile("Checked in", "Checked in", "checked") +
+        tile("Retry requested", "Retry requested", "retry") +
+        tile("Missed", "Missed", "missed") +
+        '</div><div style="height:12px"></div>' + (exceptions || empty);
+    }
+
+    function workersPage() {
+      const people = activeWorkers();
+      const rows = state.windowId
+        ? people.map(personRow).join("")
+        : '<p class="sub">No open window.</p>';
+      return '<h1>Workers</h1><div style="height:12px"></div>' + (rows || '<p class="sub">No workers.</p>');
+    }
+
+    function supervisorSettings() {
+      const crew = currentCrew();
+      return '<h1>Settings</h1>' +
+        '<div class="card"><p class="caption">Window</p><p class="sub">' + windowText() + '</p>' +
+        '<button class="btn compact" id="open-window" type="button">Open window</button>' +
+        '<button class="outline" id="close-window" type="button">Close window</button></div>' +
+        '<div class="card" style="margin-top:12px"><p class="caption">Crew</p><h2>' + crew.name + '</h2>' +
+        '<p class="sub">' + (crew.site || "No site") + '</p></div>';
+    }
+
+    function profileValue(value, suffix) {
+      if (value == null || value === "") return "Not set";
+      return suffix ? value + suffix : String(value);
+    }
+
+    function bmiText(person) {
+      if (!person.heightCm || !person.weightKg) return "Not set";
+      const meters = person.heightCm / 100;
+      const bmi = person.weightKg / (meters * meters);
+      const label = bmi < 18.5 ? "Underweight" : bmi < 25 ? "Normal" : bmi < 30 ? "Overweight" : "Obese";
+      return bmi.toFixed(1) + " · " + label;
+    }
+
+    function profileCard(person) {
+      const line = (label, value) =>
+        '<div class="profile-line"><span>' + label + '</span><strong>' + value + '</strong></div>';
+      return '<div class="card" style="margin-top:16px"><div class="top-row"><p class="caption">Profile</p>' +
+        '<button class="outline slim end" id="edit-profile" type="button">Edit</button></div>' +
+        line("Employee ID", profileValue(person.employeeId)) +
+        line("Age", profileValue(person.age)) +
+        line("Height", person.heightCm == null ? "Not set" : person.heightCm + " cm") +
+        line("Weight", person.weightKg == null ? "Not set" : Number(person.weightKg).toFixed(1) + " kg") +
+        line("BMI", bmiText(person)) +
+        line("Pod", profileValue(person.pod)) +
+        '</div>';
+    }
+
+    function detail() {
+      const person = worker(state.detailId);
+      const row = inWindow(person.id);
+      const status = state.windowId ? rosterStatus(person.id) : "No open window";
+      const rows = state.checkIns.filter((item) => item.workerId === person.id);
+      const tone = statusTone(status);
+      const initial = (person.name || "?").charAt(0).toUpperCase();
+      const when = row
+        ? '<p class="caption">' + timeLabel(row.capturedAt) + " · " + row.source + "</p>"
+        : "";
+      const recheck = state.windowId && !recheckFor(person.id)
+        ? '<button class="outline" id="request-recheck" type="button">Request a recheck</button>'
+        : "";
+      return '<button class="outline slim" id="back-roster" type="button">Back</button>' +
+        '<div class="avatar-ring ' + tone + '"><div class="avatar">' + initial + '</div></div>' +
+        '<h1 class="ink" style="text-align:center">' + person.name + '</h1><h2 class="' + tone + '" style="text-align:center">' + status + '</h2>' +
+        when + recheck + profileCard(person) +
+        '<div class="top-row" style="margin-top:12px"><p class="caption">Trend</p>' +
+        '<select class="metric" id="metric">' +
+        '<option value="temp"' + ((state.metric || "temp") === "temp" ? " selected" : "") + '>Forehead temperature</option>' +
+        '<option value="volume"' + (state.metric === "volume" ? " selected" : "") + '>Strip volume</option>' +
+        '<option value="conductivity"' + (state.metric === "conductivity" ? " selected" : "") + '>Conductivity</option>' +
+        '<option value="rate"' + (state.metric === "rate" ? " selected" : "") + '>Sweat rate</option>' +
+        '</select></div>' +
+        '<div class="card" style="margin-top:8px">' + trendMarkup(rows) + '</div>';
+    }
+
+    function profileForm() {
+      const person = worker(state.detailId);
+      const field = (id, label, value) =>
+        '<input class="field" id="' + id + '" placeholder="' + label + '" value="' + (value == null ? "" : value) + '">';
+      return '<div class="overlay"><button class="outline slim" id="back-detail" type="button">Back</button><h1>Edit profile</h1>' +
+        field("profile-name", "Name", person.name) +
+        field("profile-employee", "Employee ID", person.employeeId || "") +
+        field("profile-age", "Age", person.age) +
+        field("profile-height", "Height (cm)", person.heightCm) +
+        field("profile-weight", "Weight (kg)", person.weightKg) +
+        (state.error ? '<p class="sub" id="profile-error">' + state.error + '</p>' : '') +
+        '<div class="grow"></div><button class="btn" id="save-profile" type="button">Save</button></div>';
+    }
+
+    function workerForm() {
+      const person = state.editId ? state.workers.find((item) => item.id === state.editId) : null;
+      const field = (id, label, value) =>
+        '<p class="caption" style="margin-top:10px">' + label + '</p>' +
+        '<input class="field" id="' + id + '" value="' + (value == null ? "" : value) + '">';
+      const remove = person
+        ? '<button class="outline" id="delete-worker" type="button">' + (person.archived ? "Restore" : "Delete") + '</button>'
+        : "";
+      return '<div class="overlay"><button class="outline slim" id="cancel-worker" type="button">Back</button>' +
+        '<h1>' + (person ? "Edit " + person.name : "Add worker") + '</h1>' +
+        field("worker-name", "Name", person ? person.name : "") +
+        field("worker-employee", "Employee ID", person ? person.employeeId || "" : "") +
+        field("worker-age", "Age", person ? person.age : "") +
+        field("worker-height", "Height (cm)", person ? person.heightCm : "") +
+        field("worker-weight", "Weight (kg)", person ? person.weightKg : "") +
+        field("worker-pod", "Pod", person ? person.pod || "" : "") +
+        (state.error ? '<p class="sub">' + state.error + '</p>' : '') +
+        '<div class="grow"></div><button class="btn" id="save-worker" type="button">Save</button>' +
+        remove + '</div>';
+    }
+
+    function chip(id, label, pressed) {
+      return '<button class="mini" type="button" id="' + id + '" aria-pressed="' + pressed + '">' + label + '</button>';
+    }
+
+    function adminBench() {
+      const scenarioButtons = Object.keys(SCENARIOS).map((id) =>
+        chip("scenario-" + id, SCENARIOS[id].label, state.scenario === id)
+      ).join("");
+      const physical = state.source === "simulated"
+        ? ""
+        : '<p class="sub">' + (state.source === "pod"
+          ? "Check in reports the tag it sees and does not save."
+          : "Check in reads one text line from the tag.") + '</p>';
+      return '<h1>Bench</h1>' +
+        (state.note ? '<p class="sub" id="bench-note">' + state.note + '</p>' : '') +
+        '<div class="card" style="margin-top:12px"><p class="caption">Scan source</p><div class="chip-row">' +
+        chip("source-simulated", "Simulated", state.source === "simulated") +
+        chip("source-tag", "Physical test tag", state.source === "tag") +
+        chip("source-pod", "Sensor pod", state.source === "pod") + '</div>' + physical + '</div>' +
+        '<div class="card" style="margin-top:12px"><p class="caption">Scenario</p><div class="chip-row">' + scenarioButtons + '</div></div>' +
+        '<div class="card" style="margin-top:12px"><p class="caption">Presented pod</p><h2>' + (state.presentedPod || "None") + '</h2>' +
+        '<input class="field" id="presented-pod" placeholder="TAG02">' +
+        '<div class="chip-row"><button class="outline slim" id="set-presented" type="button">Set</button>' +
+        '<button class="outline slim" id="clear-presented" type="button">Clear</button></div></div>' +
+        '<div class="card" style="margin-top:12px"><p class="caption">NFC</p><p class="sub">This preview does not read a tag.</p></div>';
+    }
+
+    function adminCrew() {
+      const crew = currentCrew();
+      const people = state.workers.filter((item) => item.crewId === state.crewId);
+      const workerRows = people.map((person) => {
+        const initial = (person.name || "?").charAt(0).toUpperCase();
+        const detail = person.archived ? "Archived" : (person.pod || "No pod");
+        return '<div class="crew-row"><span class="mini-avatar">' + initial + '</span>' +
+          '<span class="person-copy"><strong>' + person.name + '</strong><span class="caption">' + detail + '</span></span>' +
+          '<button class="outline slim" type="button" data-edit="' + person.id + '">Edit</button></div>';
+      }).join("");
+      const crewButtons = state.crews.map((item) =>
+        '<button class="list-btn" type="button" data-crew="' + item.id + '">' + item.name + (item.id === state.crewId ? " · Current" : "") + '</button>'
+      ).join("");
+      return '<h1>Crew</h1>' +
+        (state.note ? '<p class="sub" id="bench-note">' + state.note + '</p>' : '') +
+        '<div class="card" style="margin-top:12px"><p class="caption">This crew</p>' +
+        '<input class="field" id="crew-name" value="' + crew.name + '">' +
+        '<input class="field" id="crew-site" value="' + (crew.site || "") + '" placeholder="Site">' +
+        '<button class="btn compact" id="save-crew" type="button">Save crew</button></div>' +
+        '<div class="card" style="margin-top:12px"><p class="caption">Workers</p>' + workerRows +
+        '<button class="outline" id="add-worker" type="button">Add worker</button></div>' +
+        '<div class="card" style="margin-top:12px"><p class="caption">Crews</p>' + crewButtons +
+        '<input class="field" id="new-crew" placeholder="New crew name">' +
+        '<button class="outline" id="add-crew" type="button">New empty crew</button></div>';
+    }
+
+    function adminTools() {
+      return '<h1>Tools</h1>' +
+        (state.note ? '<p class="sub" id="bench-note">' + state.note + '</p>' : '') +
+        '<div class="card" style="margin-top:12px">' +
+        '<button class="outline" id="unpaired" type="button">Unpaired bench read</button>' +
+        '<button class="outline" id="reset-demo" type="button">Reset demo crew</button></div>';
+    }
+
+    function picker() {
+      const buttons = activeWorkers().map((person) =>
+        '<button class="list-btn" type="button" data-pick="' + person.id + '">' + person.name + '</button>'
+      ).join("");
+      return '<div class="sheet"><div class="card"><h2>Choose worker</h2>' + buttons +
+        '<button class="text-btn quiet" id="close-picker" type="button">Cancel</button></div></div>';
+    }
+
+    function resetConfirm() {
+      return '<div class="overlay"><h1>Reset demo crew?</h1><p class="sub">This clears Demo Crew check-ins and restores Avery, Blake, and Casey. Other crews stay.</p><div class="grow"></div>' +
+        '<button class="btn" id="confirm-reset" type="button">Reset</button>' +
+        '<button class="text-btn quiet" id="cancel-reset" type="button">Cancel</button></div>';
+    }
+
+    function confirm() {
+      const person = worker(state.pendingWorkerId);
+      return '<div class="sheet"><div class="card"><h2>Check in as ' + person.name + '?</h2>' +
+        '<button class="btn secondary" id="confirm-worker" type="button">Confirm</button>' +
+        '<button class="text-btn quiet" id="close-picker" type="button">Cancel</button></div></div>';
+    }
+
+    function mainBody() {
+      const tab = currentTab();
+      if (state.role === "supervisor") {
+        if (tab === "workers") return workersPage();
+        if (tab === "settings") return supervisorSettings();
+        return dashboard();
+      }
+      if (state.role === "admin") {
+        if (tab === "crew") return adminCrew();
+        if (tab === "tools") return adminTools();
+        return adminBench();
+      }
+      if (tab === "history") return history();
+      if (tab === "settings") return workerSettings();
+      return home();
+    }
+
+    function render() {
+      const flow = state.view === "session" || state.view === "saved" || state.view === "history" || state.view === "detail" || state.view === "profile" || state.view === "worker-form" || state.view === "reset-confirm";
+      let body = "";
+      if (state.view === "session") body = session();
+      else if (state.view === "saved") body = saved();
+      else if (state.view === "history") body = history();
+      else if (state.view === "detail") body = detail();
+      else if (state.view === "profile") body = profileForm();
+      else if (state.view === "worker-form") body = workerForm();
+      else if (state.view === "reset-confirm") body = resetConfirm();
+      else body = mainBody();
+
+      if (state.view === "picker") body = home() + picker();
+      if (state.view === "confirm") body = home() + confirm();
+      if (state.view === "manual") body = home() + manualSheet();
+
+      const now = new Date();
+      const nextFrame = state.role + "/" + currentTab();
+      const rise = frameKey && frameKey !== nextFrame;
+      frameKey = nextFrame;
+      const contentClass = rise ? "content rise" : "content";
+      const status = '<div class="status"><span>' + now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) + '</span></div>';
+      screen.innerHTML = flow
+        ? status + '<div class="' + contentClass + '">' + body + '</div>'
+        : status + rolePill() + '<div class="' + contentClass + '">' + body + '</div>' + tabBar();
+      bind();
+    }
+
+    function saveWorkerForm() {
+      const name = document.getElementById("worker-name").value.trim();
+      if (!name) {
+        set({ error: "Name is required" });
+        return;
+      }
+      const ageRaw = document.getElementById("worker-age").value.trim();
+      const heightRaw = document.getElementById("worker-height").value.trim();
+      const weightRaw = document.getElementById("worker-weight").value.trim();
+      const age = ageRaw === "" ? null : Number(ageRaw);
+      const heightCm = heightRaw === "" ? null : Number(heightRaw);
+      const weightKg = weightRaw === "" ? null : Number(weightRaw);
+      if ((ageRaw && Number.isNaN(age)) || (heightRaw && Number.isNaN(heightCm)) || (weightRaw && Number.isNaN(weightKg))) {
+        set({ error: "Not a number." });
+        return;
+      }
+      const employeeId = document.getElementById("worker-employee").value.trim();
+      const pod = document.getElementById("worker-pod").value.trim();
+      const fields = { name, employeeId, age, heightCm, weightKg, pod };
+      if (state.editId) {
+        set({
+          workers: state.workers.map((item) => item.id === state.editId ? { ...item, ...fields } : item),
+          view: "home",
+          error: ""
+        });
+        return;
+      }
+      set({
+        workers: state.workers.concat([{
+          id: "worker-" + Date.now(),
+          archived: false,
+          crewId: state.crewId,
+          ...fields
+        }]),
+        view: "home",
+        error: ""
+      });
+    }
+
+    function bind() {
+      screen.querySelectorAll("[data-role]").forEach((button) => {
+        button.addEventListener("click", () => {
+          clearTimer();
+          const role = button.dataset.role;
+          const homeTab = role === "supervisor" ? "dashboard" : role === "admin" ? "bench" : "scan";
+          set({
+            role,
+            view: "home",
+            tabs: { ...(state.tabs || {}), [role]: homeTab }
+          });
+        });
+      });
+      const click = (id, action) => {
+        const node = document.getElementById(id);
+        if (node) node.addEventListener("click", action);
+      };
+      click("check-in", startSession);
+      click("manual-entry", () => {
+        if (!state.windowOpen) return;
+        set({ view: "manual", error: "" });
+      });
+      click("save-manual", saveManual);
+      click("close-manual", () => set({ view: "home", error: "" }));
+      click("switch-worker", () => set({ view: "picker" }));
+      const metric = document.getElementById("metric");
+      if (metric) {
+        metric.addEventListener("change", () => set({ metric: metric.value }));
+      }
+      screen.querySelectorAll("[data-tab]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const tabs = {
+            ...(state.tabs || {}),
+            [state.role]: button.dataset.tab
+          };
+          set({ tabs, view: "home" });
+        });
+      });
+      click("cancel-read", cancelRead);
+      click("run-payload", runPayload);
+      click("timeout", timeoutRead);
+      click("back-ready", cancelRead);
+      click("done", () => set({
+        view: "home",
+        tabs: { ...(state.tabs || {}), worker: "scan" }
+      }));
+      click("back-home", () => set({ view: "home" }));
+      click("back-roster", () => set({ role: "supervisor", view: "home" }));
+      click("toggle-measurements", () => set({ measurementsOpen: !state.measurementsOpen }));
+      click("close-picker", () => set({ view: "home", pendingWorkerId: null }));
+      click("confirm-worker", () => set({ workerId: state.pendingWorkerId, view: "home", pendingWorkerId: null }));
+      click("source-simulated", () => set({ source: "simulated", note: "" }));
+      click("source-tag", () => set({ source: "tag", note: "" }));
+      click("source-pod", () => set({ source: "pod", note: "" }));
+      Object.keys(SCENARIOS).forEach((id) => {
+        click("scenario-" + id, () => {
+          if (state.source !== "simulated") return;
+          set({ scenario: id, note: "" });
+        });
+      });
+      click("set-presented", () => {
+        const value = document.getElementById("presented-pod").value.trim();
+        set({ presentedPod: value, note: "" });
+      });
+      click("clear-presented", () => set({ presentedPod: "", note: "" }));
+      function remember(crewId, window) {
+        return { ...(state.windows || {}), [crewId]: window };
+      }
+      click("open-window", () => {
+        if (state.windowOpen && state.windowId) {
+          set({ note: "A window is already open" });
+          return;
+        }
+        const openedAt = new Date().toISOString();
+        const windowId = "window-" + Date.now();
+        set({
+          windowOpen: true,
+          windowId,
+          openedAt,
+          windows: remember(state.crewId, { id: windowId, open: true, openedAt }),
+          note: ""
+        });
+      });
+      click("close-window", () => {
+        if (!state.windowOpen || !state.windowId) return;
+        set({
+          windowOpen: false,
+          windows: remember(state.crewId, {
+            id: state.windowId,
+            open: false,
+            openedAt: state.openedAt
+          }),
+          note: ""
+        });
+      });
+      click("save-crew", () => {
+        const name = document.getElementById("crew-name").value.trim();
+        if (!name || !state.crewId) return;
+        const site = document.getElementById("crew-site").value.trim();
+        set({
+          crews: state.crews.map((crew) => crew.id === state.crewId ? { ...crew, name, site } : crew),
+          note: ""
+        });
+      });
+      click("add-worker", () => set({ view: "worker-form", editId: "", error: "" }));
+      click("cancel-worker", () => set({ view: "home", error: "" }));
+      click("save-worker", saveWorkerForm);
+      click("delete-worker", () => {
+        if (!state.editId) return;
+        set({
+          workers: state.workers.map((item) => item.id === state.editId
+            ? { ...item, archived: !item.archived }
+            : item),
+          view: "home",
+          error: ""
+        });
+      });
+      click("add-crew", () => {
+        const name = document.getElementById("new-crew").value.trim();
+        if (!name) return;
+        const id = "crew-" + Date.now();
+        set({
+          crews: state.crews.concat([{ id, name }]),
+          windows: remember(state.crewId, {
+            id: state.windowId,
+            open: !!state.windowOpen,
+            openedAt: state.openedAt
+          }),
+          crewId: id,
+          workerId: "",
+          windowOpen: false,
+          windowId: null,
+          note: ""
+        });
+      });
+      click("unpaired", () => {
+        if (!state.windowOpen || !state.workerId) {
+          set({ note: "Pick a worker and open a window first" });
+          return;
+        }
+        set({ note: "Unpaired read recorded" });
+      });
+      click("reset-demo", () => set({ view: "reset-confirm" }));
+      click("cancel-reset", () => set({ view: "home", role: "admin" }));
+      click("confirm-reset", () => {
+        const others = state.workers.filter((item) => item.crewId !== "demo");
+        const otherCrews = state.crews.filter((crew) => crew.id !== "demo");
+        const openedAt = new Date().toISOString();
+        const windowId = "window-" + Date.now();
+        const windows = { ...(state.windows || {}) };
+        windows.demo = { id: windowId, open: true, openedAt };
+        set({
+          workers: SEED_WORKERS.map((item) => ({ ...item })).concat(others),
+          crews: [{ id: "demo", name: "Demo Crew", site: "Test Site" }].concat(otherCrews),
+          checkIns: state.checkIns.filter((row) => row.crewId && row.crewId !== "demo"),
+          followUps: [],
+          windowOpen: true,
+          windowId,
+          openedAt,
+          windows,
+          crewId: "demo",
+          workerId: "avery",
+          source: "simulated",
+          scenario: "complete",
+          presentedPod: "",
+          role: "admin",
+          view: "home",
+          note: "Demo crew restored"
+        });
+      });
+      click("edit-profile", () => set({ view: "profile", error: "" }));
+      click("back-detail", () => set({ view: "detail", error: "" }));
+      click("save-profile", () => {
+        const name = document.getElementById("profile-name").value.trim();
+        if (!name) {
+          set({ error: "Name is required" });
+          return;
+        }
+        const ageRaw = document.getElementById("profile-age").value.trim();
+        const heightRaw = document.getElementById("profile-height").value.trim();
+        const weightRaw = document.getElementById("profile-weight").value.trim();
+        const age = ageRaw === "" ? null : Number(ageRaw);
+        const heightCm = heightRaw === "" ? null : Number(heightRaw);
+        const weightKg = weightRaw === "" ? null : Number(weightRaw);
+        if ((ageRaw && Number.isNaN(age)) || (heightRaw && Number.isNaN(heightCm)) || (weightRaw && Number.isNaN(weightKg))) {
+          set({ error: "Not a number." });
+          return;
+        }
+        const employeeId = document.getElementById("profile-employee").value.trim();
+        set({
+          workers: state.workers.map((item) => item.id === state.detailId
+            ? { ...item, name, employeeId, age, heightCm, weightKg }
+            : item),
+          view: "detail",
+          error: ""
+        });
+      });
+      click("request-recheck", () => {
+        if (!state.windowId || !state.detailId || recheckFor(state.detailId)) return;
+        set({
+          followUps: state.followUps.concat([{
+            workerId: state.detailId,
+            windowId: state.windowId
+          }])
+        });
+      });
+      screen.querySelectorAll("[data-edit]").forEach((button) => {
+        button.addEventListener("click", () => {
+          set({ view: "worker-form", editId: button.dataset.edit, error: "" });
+        });
+      });
+      screen.querySelectorAll("[data-crew]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const crewId = button.dataset.crew;
+          if (crewId === state.crewId) return;
+          const people = state.workers.filter((item) => item.crewId === crewId && !item.archived);
+          const still = people.some((item) => item.id === state.workerId);
+          const windows = remember(state.crewId, {
+            id: state.windowId,
+            open: !!state.windowOpen,
+            openedAt: state.openedAt
+          });
+          const next = windows[crewId] || { id: null, open: false, openedAt: state.openedAt };
+          set({
+            windows,
+            crewId,
+            workerId: still ? state.workerId : (people[0] ? people[0].id : ""),
+            windowOpen: !!next.open,
+            windowId: next.id,
+            openedAt: next.openedAt || state.openedAt,
+            note: ""
+          });
+        });
+      });
+      screen.querySelectorAll("[data-pick]").forEach((button) => {
+        button.addEventListener("click", () => confirmWorker(button.dataset.pick));
+      });
+      screen.querySelectorAll("[data-detail]").forEach((button) => {
+        button.addEventListener("click", () => set({ view: "detail", detailId: button.dataset.detail }));
+      });
+    }
+
+    render();
+  </script>
+</body>
+</html>

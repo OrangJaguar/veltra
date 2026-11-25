@@ -6,6 +6,7 @@ import '../features/auth/providers/auth_providers.dart';
 import '../models/sync_status.dart';
 import '../models/worker.dart';
 import '../repositories/baseline_repository.dart';
+import '../repositories/check_in_repository.dart';
 import '../repositories/scan_repository.dart';
 import '../repositories/worker_repository.dart';
 import '../services/database_service.dart';
@@ -50,8 +51,15 @@ final syncServiceProvider = Provider<SyncService>((ref) {
   );
 });
 
+final checkInRepositoryProvider = Provider<CheckInRepository>((ref) {
+  return CheckInRepository(ref.watch(databaseServiceProvider));
+});
+
 final demoDataServiceProvider = Provider<DemoDataService>((ref) {
-  return DemoDataService(ref.watch(workerRepositoryProvider));
+  return DemoDataService(
+    ref.watch(workerRepositoryProvider),
+    ref.watch(checkInRepositoryProvider),
+  );
 });
 
 final photoServiceProvider = Provider<PhotoService>((ref) => PhotoService());

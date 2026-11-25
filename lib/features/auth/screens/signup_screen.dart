@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/firebase_gate.dart';
 import '../../../core/theme/veltra_colors.dart';
 import '../../../core/theme/veltra_text_styles.dart';
 import '../../../core/widgets/glass_card.dart';
@@ -45,6 +46,14 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
       _isLoading = true;
       _error = null;
     });
+
+    if (!firebaseReady) {
+      setState(() {
+        _isLoading = false;
+        _error = 'Check your connection';
+      });
+      return;
+    }
 
     try {
       await ref.read(authRepositoryProvider).signUp(

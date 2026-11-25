@@ -13,7 +13,7 @@ class WorkerRepository {
   WorkerRepository(this._databaseService, this._firestore);
 
   final DatabaseService _databaseService;
-  final FirebaseFirestore _firestore;
+  final FirebaseFirestore? _firestore;
   final _uuid = const Uuid();
   final _random = Random();
 
@@ -198,7 +198,11 @@ class WorkerRepository {
     required Worker worker,
     required WorkerBaseline baseline,
   }) async {
-    final workerRef = _firestore
+    final firestore = _firestore;
+    if (firestore == null) {
+      throw StateError('Firebase is not available');
+    }
+    final workerRef = firestore
         .collection('users')
         .doc(userId)
         .collection('workers')
@@ -219,7 +223,11 @@ class WorkerRepository {
     required String userId,
     required String workerId,
   }) async {
-    final workerRef = _firestore
+    final firestore = _firestore;
+    if (firestore == null) {
+      throw StateError('Firebase is not available');
+    }
+    final workerRef = firestore
         .collection('users')
         .doc(userId)
         .collection('workers')

@@ -26,6 +26,8 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NFCReaderUsageDescription</key>
+	<string>Veltra reads a check-in tag while you hold the phone near it.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Veltra uses your location to fetch local heat (WBGT) conditions.</string>
 	<key>NSMicrophoneUsageDescription</key>
@@ -34,6 +36,27 @@
 	<string>Veltra uses your photo library so you can add optional profile photos for crew members.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Veltra uses speech recognition to match the worker you name to your crew roster.</string>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<false/>
+		<key>UISceneConfigurations</key>
+		<dict>
+			<key>UIWindowSceneSessionRoleApplication</key>
+			<array>
+				<dict>
+					<key>UISceneClassName</key>
+					<string>UIWindowScene</string>
+					<key>UISceneConfigurationName</key>
+					<string>flutter</string>
+					<key>UISceneDelegateClassName</key>
+					<string>FlutterSceneDelegate</string>
+					<key>UISceneStoryboardFile</key>
+					<string>Main</string>
+				</dict>
+			</array>
+		</dict>
+	</dict>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

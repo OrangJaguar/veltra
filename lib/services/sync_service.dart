@@ -24,7 +24,7 @@ class SyncService {
   final WorkerRepository _workerRepository;
   final BaselineRepository _baselineRepository;
   final ScanRepository _scanRepository;
-  final FirebaseFirestore _firestore;
+  final FirebaseFirestore? _firestore;
   final Connectivity _connectivity;
 
   Stream<ConnectivityResult> get connectivityStream =>
@@ -44,6 +44,7 @@ class SyncService {
   }
 
   Future<void> flushQueue(String userId) async {
+    if (_firestore == null) return;
     if (!await isOnline) return;
 
     final rows = await _databaseService.db.query(
@@ -109,7 +110,7 @@ class SyncService {
             final workerId = payload['workerId'] as String;
             final baseline = await _baselineRepository.getBaseline(workerId);
             if (baseline == null) break;
-            await _firestore
+            await _firestore!
                 .collection('users')
                 .doc(userId)
                 .collection('workers')
@@ -126,7 +127,7 @@ class SyncService {
           case 'shift_update':
             if (payloadRaw == null) break;
             final payload = jsonDecode(payloadRaw) as Map<String, dynamic>;
-            await _firestore
+            await _firestore!
                 .collection('users')
                 .doc(userId)
                 .collection('meta')

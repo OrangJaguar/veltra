@@ -1,6 +1,6 @@
 # Veltra
 
-Industrial heat safety screening for construction crews — foreman app with mock scan, voice worker ID, and Firebase backend.
+Worker self check-in for construction crews. The current build is local-first, with simulated scans first and NDEF test tags after that.
 
 ## Docs
 
@@ -9,7 +9,8 @@ Industrial heat safety screening for construction crews — foreman app with moc
 | [DESIGN.md](DESIGN.md) | UI/UX design system |
 | [VELTRA.md](VELTRA.md) | Product & team context |
 | [LOCAL_DEV.md](LOCAL_DEV.md) | How to run the app locally |
-| [plans/MASTER_PLAN.md](plans/MASTER_PLAN.md) | Build phases — say "code phase N" |
+| [plans/MASTER_PLAN.md](plans/MASTER_PLAN.md) | Current program — say "code plan N" |
+| [plans/mvp-MASTER_PLAN.md](plans/mvp-MASTER_PLAN.md) | Archived foreman app (phases 0–5) |
 
 ## Quick start (after Phase 1)
 
